@@ -12,7 +12,7 @@ env:
   SKIP_RELEASE: ${{ contains(join(github.event.commits.*.message), '#skip') }}
 
 jobs:
-  simple_deployment_pipeline:
+  deploy:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
@@ -47,7 +47,7 @@ jobs:
           rollbackonhealthcheckfailed: true
   tag_release:
     if: ${{ github.event_name == 'push' }}
-    needs: [simple_deployment_pipeline]
+    needs: [deploy]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
