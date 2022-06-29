@@ -8,6 +8,9 @@ on:
     branches: [master]
     types: [opened, synchronize]
 
+env:
+  SKIP_RELEASE: ${{ contains(join(github.event.commits.*.message), '#skip') }}
+
 jobs:
   simple_deployment_pipeline:
     runs-on: ubuntu-20.04
@@ -16,6 +19,8 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
+      - name: Env vars
+        run: echo "Deployment and version bump will be skipped = $SKIP_RELEASE"
       - name: npm install
         run: npm install
       - name: lint
@@ -30,8 +35,8 @@ jobs:
           command: npm run test:e2e
           start: npm run start-prod
           wait-on: http://localhost:5000
-      - if: ${{ github.event_name == 'push' }}
-        name: deploy to heroku
+      - if: ${{ github.event_name == 'push' && env.SKIP_RELEASE == 'false' }}
+        name: Deploy to heroku
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
@@ -49,24 +54,9 @@ jobs:
         with:
           fetch-depth: '0'
       - name: Bump version and push tag
+        if: ${{ env.SKIP_RELEASE == 'false' }}
         uses: anothrNick/github-tag-action@ce4b5ffa38e072fa7a901e417253c438fcc2ccce
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
           RELEASE_BRANCHES: master
-  a_test_job:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: gihub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: commits
-        env:
-          COMMITS: ${{ toJson(github.event.commits) }}
-        run: echo "$COMMITS"
-      - name: commit messages
-        env:
-          COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
-        run: echo "$COMMIT_MESSAGES"
