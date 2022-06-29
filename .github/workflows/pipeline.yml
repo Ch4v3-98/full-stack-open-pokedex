@@ -35,6 +35,32 @@ jobs:
           command: npm run test:e2e
           start: npm run start-prod
           wait-on: http://localhost:5000
+      - name: Discord Success Notify
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        if: success()
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          severity: info
+          details:
+            title: Deployment Success
+            description:
+              - 'Deployment to production successful'
+              - 'Branch: $GITHUB_REF'
+              - 'Commit: $GITHUB_SHA'
+              - 'Repository: $GITHUB_REPOSITORY'
+      - name: Discord Failure Notify
+        uses: rjstone/discord-webhook-notify@v1.0.4
+        if: failure()
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          severity: error
+          details:
+            title: Deployment Failure
+            description:
+              - 'Deployment to production failed'
+              - 'Branch: $GITHUB_REF'
+              - 'Commit: $GITHUB_SHA'
+              - 'Repository: $GITHUB_REPOSITORY'
       - if: ${{ github.event_name == 'push' && env.SKIP_RELEASE == 'false' }}
         name: Deploy to heroku
         uses: akhileshns/heroku-deploy@v3.12.12
