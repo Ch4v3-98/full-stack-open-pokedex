@@ -35,6 +35,16 @@ jobs:
           command: npm run test:e2e
           start: npm run start-prod
           wait-on: http://localhost:5000
+      - if: ${{ github.event_name == 'push' && env.SKIP_RELEASE == 'false' }}
+        name: Deploy to heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: 'ch4v3-pokedex-app'
+          heroku_email: 'juansechavero@gmail.com'
+          healthcheck: 'http://localhost:5000/health'
+          checkstring: 'ok'
+          rollbackonhealthcheckfailed: true
       - name: Discord Success Notify
         uses: rjstone/discord-webhook-notify@v1.0.4
         if: ${{ github.event_name == 'push' && env.SKIP_RELEASE == 'false' && success() }}
@@ -49,16 +59,6 @@ jobs:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           severity: error
           details: Commit failed to deploy.
-      - if: ${{ github.event_name == 'push' && env.SKIP_RELEASE == 'false' }}
-        name: Deploy to heroku
-        uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: 'ch4v3-pokedex-app'
-          heroku_email: 'juansechavero@gmail.com'
-          healthcheck: 'http://localhost:5000/health'
-          checkstring: 'ok'
-          rollbackonhealthcheckfailed: true
   tag_release:
     if: ${{ github.event_name == 'push' }}
     needs: [deploy]
