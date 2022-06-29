@@ -48,7 +48,7 @@ jobs:
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           severity: error
-          details: Commit ${{ github.event.commits.0.id }} by ${{ github.event.commits.0.author.name }} failed to deploy.
+          details: Commit failed to deploy.
       - if: ${{ github.event_name == 'push' && env.SKIP_RELEASE == 'false' }}
         name: Deploy to heroku
         uses: akhileshns/heroku-deploy@v3.12.12
