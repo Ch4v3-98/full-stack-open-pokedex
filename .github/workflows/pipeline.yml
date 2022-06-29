@@ -37,7 +37,7 @@ jobs:
           wait-on: http://localhost:5000
       - name: Discord Success Notify
         uses: rjstone/discord-webhook-notify@v1.0.4
-        if: success()
+        if: ${{ github.event_name == 'push' && env.SKIP_RELEASE == 'false' && success() }}
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           severity: info
@@ -48,9 +48,10 @@ jobs:
               - 'Branch: $GITHUB_REF'
               - 'Commit: $GITHUB_SHA'
               - 'Repository: $GITHUB_REPOSITORY'
+              - 'To: https://ch4v3-pokedex-app.herokuapp.com'
       - name: Discord Failure Notify
         uses: rjstone/discord-webhook-notify@v1.0.4
-        if: failure()
+        if: ${{ github.event_name == 'push' && env.SKIP_RELEASE == 'false' && failure() }}
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           severity: error
