@@ -45,20 +45,21 @@ jobs:
           healthcheck: 'http://localhost:5000/health'
           checkstring: 'ok'
           rollbackonhealthcheckfailed: true
-      - name: Discord Success Notify
-        uses: rjstone/discord-webhook-notify@v1.0.4
-        if: ${{ github.event_name == 'push' && env.SKIP_RELEASE == 'false' && success() }}
-        with:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          severity: info
-          details: Deployment to https://ch4v3-pokedex-app.herokuapp.com successful.
-      - name: Discord Failure Notify
-        uses: rjstone/discord-webhook-notify@v1.0.4
-        if: ${{ github.event_name == 'push' && env.SKIP_RELEASE == 'false' && failure() }}
-        with:
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          severity: error
-          details: Commit failed to deploy.
+      # - name: Discord Success Notify
+      #   uses: rjstone/discord-webhook-notify@v1.0.4
+      #   if: ${{ github.event_name == 'push' && env.SKIP_RELEASE == 'false' && success() }}
+      #   with:
+      #     webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      #     severity: info
+      #     text: Deployment to https://ch4v3-pokedex-app.herokuapp.com successful.
+      # - name: Discord Failure Notify
+      #   uses: rjstone/discord-webhook-notify@v1.0.4
+      #   if: ${{ github.event_name == 'push' && env.SKIP_RELEASE == 'false' && failure() }}
+      #   with:
+      #     webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      #     severity: error
+      #     text: Deployment to https://ch4v3-pokedex-app.herokuapp.com failed.
+      #     details: Commit failed to deploy.
   tag_release:
     if: ${{ github.event_name == 'push' }}
     needs: [deploy]
