@@ -41,18 +41,14 @@ jobs:
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           severity: info
-          details:
-            title: Deployment Success
-            description: Deployment to https://ch4v3-pokedex-app.herokuapp.com successful.
+          details: Deployment to https://ch4v3-pokedex-app.herokuapp.com successful.
       - name: Discord Failure Notify
         uses: rjstone/discord-webhook-notify@v1.0.4
         if: ${{ github.event_name == 'push' && env.SKIP_RELEASE == 'false' && failure() }}
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           severity: error
-          details:
-            title: Deployment Failure
-            description: Commit ${{ github.event.commits.0.id }} by ${{ github.event.commits.0.author.name }} failed to deploy.
+          details: Commit ${{ github.event.commits.0.id }} by ${{ github.event.commits.0.author.name }} failed to deploy.
       - if: ${{ github.event_name == 'push' && env.SKIP_RELEASE == 'false' }}
         name: Deploy to heroku
         uses: akhileshns/heroku-deploy@v3.12.12
